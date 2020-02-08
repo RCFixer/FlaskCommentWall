@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Comments
+{% endblock %}
+
+{% block content %}
+<main class="py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h3>Комментарии</h3></div>
+
+                    <div class="card-body">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                        {% if category == 'view_comment' %}
+                        <div class="alert alert-success" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+
+                    {% for users_comment in users_comments %}
+                        {% if users_comment.is_active %}
+                        <div class="media">
+                          <img src="{{url_for('static', filename='images/avatars/')}}{{users_comment.user.avatar}}" class="mr-3" alt="..." width="64" height="64">
+                          <div class="media-body">
+                            <h5 class="mt-0">{{users_comment.name}}</h5> 
+                            <span><small>{{users_comment.created.strftime('%d/%m/%Y')}}</small></span>
+                            <p>
+                                {{users_comment.comment}}
+                            </p>
+                          </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-12" style="margin-top: 20px;">
+            {% if current_user.is_anonymous %}
+            <div class="alert alert-primary" role="alert">
+                Чтобы оставить комментарий, <a href="/login">авторизуйтесь</a>
+            </div>>
+            {% else %}
+            
+                <div class="card">
+                    <div class="card-header"><h3>Оставить комментарий</h3></div>
+
+                    <div class="card-body">
+
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% for category, message in messages %}
+                                {% if category == 'post_message' %}
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+
+                        <form action="{{url_for('index')}}" method="POST">
+                          <div class="form-group">
+                            <label for="exampleFormControlTextarea1">Сообщение</label>
+                            <textarea name="text" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                          </div>
+                          <button type="submit" class="btn btn-success">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
